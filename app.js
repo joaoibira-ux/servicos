@@ -7,7 +7,7 @@ const firebaseConfig = {
   appId: "1:472820177992:web:2e1b98c9f6ac3a823d0c7d"
 };
 
-const VERSAO = "1.2";
+const VERSAO = "1.3";
 document.getElementById("versao-app").textContent = "v" + VERSAO;
 
 firebase.initializeApp(firebaseConfig);
@@ -75,15 +75,19 @@ function render(docs) {
   }).join("");
 }
 
+function ordemServico(nome) {
+  const n = (nome || "").toLowerCase();
+  if (n.includes("tratamento"))              return 0;
+  if (n.includes("pasta"))                   return 1;
+  if (n.includes("emassamento") || n.includes("massa")) return 2;
+  if (n.includes("textura"))                 return 3;
+  return 99;
+}
+
 function sortServicos(docs) {
-  return [...docs].sort((a, b) => {
-    const aN = (a.data().nome || "").toLowerCase();
-    const bN = (b.data().nome || "").toLowerCase();
-    const aT = aN.startsWith("tratamento") ? 0 : 1;
-    const bT = bN.startsWith("tratamento") ? 0 : 1;
-    if (aT !== bT) return aT - bT;
-    return aN.localeCompare(bN, "pt-BR");
-  });
+  return [...docs].sort((a, b) =>
+    ordemServico(a.data().nome) - ordemServico(b.data().nome)
+  );
 }
 
 col.onSnapshot(snap => {
