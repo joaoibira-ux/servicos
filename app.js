@@ -7,7 +7,7 @@ const firebaseConfig = {
   appId: "1:472820177992:web:2e1b98c9f6ac3a823d0c7d"
 };
 
-const VERSAO = "1.1";
+const VERSAO = "1.2";
 document.getElementById("versao-app").textContent = "v" + VERSAO;
 
 firebase.initializeApp(firebaseConfig);
@@ -75,8 +75,19 @@ function render(docs) {
   }).join("");
 }
 
-col.orderBy("criadoEm", "asc").onSnapshot(snap => {
-  render(snap.docs);
+function sortServicos(docs) {
+  return [...docs].sort((a, b) => {
+    const aN = (a.data().nome || "").toLowerCase();
+    const bN = (b.data().nome || "").toLowerCase();
+    const aT = aN.startsWith("tratamento") ? 0 : 1;
+    const bT = bN.startsWith("tratamento") ? 0 : 1;
+    if (aT !== bT) return aT - bT;
+    return aN.localeCompare(bN, "pt-BR");
+  });
+}
+
+col.onSnapshot(snap => {
+  render(sortServicos(snap.docs));
 }, err => {
   console.error(err);
   document.getElementById("lista").innerHTML =
