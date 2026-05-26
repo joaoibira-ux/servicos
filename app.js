@@ -7,7 +7,7 @@ const firebaseConfig = {
   appId: "1:472820177992:web:2e1b98c9f6ac3a823d0c7d"
 };
 
-const VERSAO = "1.0";
+const VERSAO = "1.1";
 document.getElementById("versao-app").textContent = "v" + VERSAO;
 
 firebase.initializeApp(firebaseConfig);
@@ -29,6 +29,11 @@ function fmtMoeda(v) {
   return "R$ " + (v || 0).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
+function fmtInput(el) {
+  const v = parseMoeda(el.value);
+  if (v > 0) el.value = v.toFixed(2).replace(".", ",");
+}
+
 let servicosCache = {};
 let editandoId = null;
 
@@ -48,12 +53,22 @@ function render(docs) {
       <div class="card">
         <div class="card-acoes">
           <button class="btn-edit" onclick="editarServico('${doc.id}')" title="Editar">✏</button>
-          <button class="btn-del" onclick="excluir('${doc.id}')" title="Excluir">✕</button>
+          <button class="btn-del"  onclick="excluir('${doc.id}')"       title="Excluir">✕</button>
         </div>
         <div class="card-nome">${escHtml(s.nome)}</div>
-        <div class="card-info">
-          <span class="badge">por apto</span>
-          <span class="card-valor">${fmtMoeda(s.valor)}</span>
+        <div class="card-valores">
+          <div class="card-linha">
+            <span class="val-label">M.d.o / Apt.</span>
+            <span class="val-num">${fmtMoeda(s.mdo)}</span>
+          </div>
+          <div class="card-linha">
+            <span class="val-label">Medição / Apt.</span>
+            <span class="val-num">${fmtMoeda(s.medicao)}</span>
+          </div>
+          <div class="card-linha">
+            <span class="val-label">Material / Apt.</span>
+            <span class="val-num">${fmtMoeda(s.material)}</span>
+          </div>
         </div>
         ${s.obs ? `<div class="card-obs">${escHtml(s.obs)}</div>` : ""}
       </div>`;
@@ -70,9 +85,11 @@ col.orderBy("criadoEm", "asc").onSnapshot(snap => {
 
 document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
-  const nome  = document.getElementById("f-nome").value.trim();
-  const valor = parseMoeda(document.getElementById("f-valor").value);
-  const obs   = document.getElementById("f-obs").value.trim();
+  const nome     = document.getElementById("f-nome").value.trim();
+  const mdo      = parseMoeda(document.getElementById("f-mdo").value);
+  const medicao  = parseMoeda(document.getElementById("f-medicao").value);
+  const material = parseMoeda(document.getElementById("f-material").value);
+  const obs      = document.getElementById("f-obs").value.trim();
 
   if (!nome) {
     alert("Nome do serviço é obrigatório.");
@@ -80,10 +97,10 @@ document.getElementById("form").addEventListener("submit", function(e) {
   }
 
   if (editandoId) {
-    col.doc(editandoId).update({ nome, valor, obs });
+    col.doc(editandoId).update({ nome, mdo, medicao, material, obs });
     editandoId = null;
   } else {
-    col.add({ nome, valor, obs,
+    col.add({ nome, mdo, medicao, material, obs,
       criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
   }
 
@@ -91,9 +108,8 @@ document.getElementById("form").addEventListener("submit", function(e) {
   toggleForm();
 });
 
-document.getElementById("f-valor").addEventListener("blur", function() {
-  const v = parseMoeda(this.value);
-  if (v > 0) this.value = v.toFixed(2).replace(".", ",");
+["f-mdo", "f-medicao", "f-material"].forEach(id => {
+  document.getElementById(id).addEventListener("blur", function() { fmtInput(this); });
 });
 
 function editarServico(id) {
@@ -102,10 +118,11 @@ function editarServico(id) {
   editandoId = id;
   document.getElementById("form-titulo").textContent = "Editar Serviço";
   document.getElementById("btn-submit").textContent  = "✓ Salvar alterações";
-  document.getElementById("f-nome").value  = s.nome  || "";
-  document.getElementById("f-valor").value = s.valor > 0
-    ? s.valor.toFixed(2).replace(".", ",") : "";
-  document.getElementById("f-obs").value   = s.obs   || "";
+  document.getElementById("f-nome").value     = s.nome || "";
+  document.getElementById("f-mdo").value      = s.mdo      > 0 ? s.mdo.toFixed(2).replace(".", ",")      : "";
+  document.getElementById("f-medicao").value  = s.medicao  > 0 ? s.medicao.toFixed(2).replace(".", ",")  : "";
+  document.getElementById("f-material").value = s.material > 0 ? s.material.toFixed(2).replace(".", ",") : "";
+  document.getElementById("f-obs").value      = s.obs || "";
   const form = document.getElementById("form");
   const fab  = document.getElementById("fab");
   form.style.display = "block";
@@ -118,10 +135,7 @@ function excluir(id) {
   if (!s) return;
   const senha = prompt("EXCLUIR SERVIÇO?\n\n" + s.nome + "\n\nDigite a senha:");
   if (senha === null) return;
-  if (senha !== "4512") {
-    alert("Senha incorreta.");
-    return;
-  }
+  if (senha !== "4512") { alert("Senha incorreta."); return; }
   col.doc(id).delete();
 }
 

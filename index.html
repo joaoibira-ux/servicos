@@ -9,7 +9,7 @@
   <title>Cadastro de Serviços</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=1" />
+  <link rel="stylesheet" href="./style.css?v=2" />
 </head>
 <body>
 
@@ -31,8 +31,16 @@
       <input type="text" id="f-nome" placeholder="Ex: Pintura de apartamento" />
     </div>
     <div class="full">
-      <label for="f-valor">Valor por apartamento (R$)</label>
-      <input type="decimal" inputmode="decimal" id="f-valor" placeholder="0,00" />
+      <label for="f-mdo">Custo de M.d.o por Apt. (R$)</label>
+      <input type="decimal" inputmode="decimal" id="f-mdo" placeholder="0,00" />
+    </div>
+    <div class="full">
+      <label for="f-medicao">Valor de Medição por Apt. (R$)</label>
+      <input type="decimal" inputmode="decimal" id="f-medicao" placeholder="0,00" />
+    </div>
+    <div class="full">
+      <label for="f-material">Custo de Material por Apt. (R$)</label>
+      <input type="decimal" inputmode="decimal" id="f-material" placeholder="0,00" />
     </div>
     <div class="full">
       <label for="f-obs">Observações</label>
@@ -44,6 +52,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="./app.js?v=1"></script>
+<script src="./app.js?v=2"></script>
 </body>
 </html>
