@@ -7,7 +7,7 @@ const firebaseConfig = {
   appId: "1:472820177992:web:2e1b98c9f6ac3a823d0c7d"
 };
 
-const VERSAO = "1.5";
+const VERSAO = "1.6";
 document.getElementById("versao-app").textContent = "v" + VERSAO;
 
 firebase.initializeApp(firebaseConfig);
@@ -56,6 +56,7 @@ function render(docs) {
           <button class="btn-del"  onclick="excluir('${doc.id}')"       title="Excluir">✕</button>
         </div>
         <div class="card-nome">${s.item ? `<span class="card-item-badge">${escHtml(s.item)}</span> ` : ""}${escHtml(s.nome)}</div>
+        ${s.nomeMapa ? `<div class="card-nome-mapa">Mapa: ${escHtml(s.nomeMapa)}</div>` : ""}
         <div class="card-valores">
           <div class="card-linha">
             <span class="val-label">M.d.o / Apt.</span>
@@ -107,6 +108,7 @@ document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
   const item     = document.getElementById("f-item").value.trim();
   const nome     = document.getElementById("f-nome").value.trim();
+  const nomeMapa = document.getElementById("f-nomemapa").value.trim();
   const mdo      = parseMoeda(document.getElementById("f-mdo").value);
   const medicao  = parseMoeda(document.getElementById("f-medicao").value);
   const material = parseMoeda(document.getElementById("f-material").value);
@@ -118,10 +120,10 @@ document.getElementById("form").addEventListener("submit", function(e) {
   }
 
   if (editandoId) {
-    col.doc(editandoId).update({ item, nome, mdo, medicao, material, obs });
+    col.doc(editandoId).update({ item, nome, nomeMapa, mdo, medicao, material, obs });
     editandoId = null;
   } else {
-    col.add({ item, nome, mdo, medicao, material, obs,
+    col.add({ item, nome, nomeMapa, mdo, medicao, material, obs,
       criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
   }
 
@@ -141,6 +143,7 @@ function editarServico(id) {
   document.getElementById("btn-submit").textContent  = "✓ Salvar alterações";
   document.getElementById("f-item").value     = s.item || "";
   document.getElementById("f-nome").value     = s.nome || "";
+  document.getElementById("f-nomemapa").value = s.nomeMapa || "";
   document.getElementById("f-mdo").value      = s.mdo      > 0 ? s.mdo.toFixed(2).replace(".", ",")      : "";
   document.getElementById("f-medicao").value  = s.medicao  > 0 ? s.medicao.toFixed(2).replace(".", ",")  : "";
   document.getElementById("f-material").value = s.material > 0 ? s.material.toFixed(2).replace(".", ",") : "";

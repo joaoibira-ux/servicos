@@ -9,7 +9,7 @@
   <title>Cadastro de Serviços</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=5" />
+  <link rel="stylesheet" href="./style.css?v=6" />
   <link rel="apple-touch-icon" href="./Logo-gw.png" />
 </head>
 <body>
@@ -38,6 +38,10 @@
       <input type="text" id="f-nome" placeholder="Ex: Pintura de apartamento" />
     </div>
     <div class="full">
+      <label for="f-nomemapa">Nome no Mapa</label>
+      <input type="text" id="f-nomemapa" placeholder="Ex: TEXTURA WC" />
+    </div>
+    <div class="full">
       <label for="f-mdo">Custo de M.d.o por Apt. (R$)</label>
       <input type="decimal" inputmode="decimal" id="f-mdo" placeholder="0,00" />
     </div>
@@ -59,6 +63,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="./app.js?v=6"></script>
+<script src="./app.js?v=7"></script>
 </body>
 </html>

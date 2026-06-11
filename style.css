@@ -66,6 +66,12 @@ header {
   font-weight: 700;
 }
 
+.card-nome-mapa {
+  font-size: 0.78rem;
+  color: #6a8a76;
+  margin-bottom: 6px;
+}
+
 .card-valores {
   display: flex;
   flex-direction: column;
