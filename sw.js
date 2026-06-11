@@ -1,8 +1,8 @@
-const VERSION = "serv-v7";
+const VERSION = "serv-v8";
 const ASSETS = [
   "./index.html",
   "./style.css?v=6",
-  "./app.js?v=7",
+  "./app.js?v=8",
   "./manifest.json",
   "./Logo-gw.png"
 ];
