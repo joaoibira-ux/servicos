@@ -56,6 +56,16 @@ header {
   padding-right: 60px;
 }
 
+.card-item-badge {
+  display: inline-block;
+  background: #e8f0e9;
+  color: #1a3322;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .card-valores {
   display: flex;
   flex-direction: column;

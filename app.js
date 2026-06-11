@@ -7,7 +7,7 @@ const firebaseConfig = {
   appId: "1:472820177992:web:2e1b98c9f6ac3a823d0c7d"
 };
 
-const VERSAO = "1.4";
+const VERSAO = "1.5";
 document.getElementById("versao-app").textContent = "v" + VERSAO;
 
 firebase.initializeApp(firebaseConfig);
@@ -55,7 +55,7 @@ function render(docs) {
           <button class="btn-edit" onclick="editarServico('${doc.id}')" title="Editar">✏</button>
           <button class="btn-del"  onclick="excluir('${doc.id}')"       title="Excluir">✕</button>
         </div>
-        <div class="card-nome">${escHtml(s.nome)}</div>
+        <div class="card-nome">${s.item ? `<span class="card-item-badge">${escHtml(s.item)}</span> ` : ""}${escHtml(s.nome)}</div>
         <div class="card-valores">
           <div class="card-linha">
             <span class="val-label">M.d.o / Apt.</span>
@@ -85,9 +85,14 @@ function ordemServico(nome) {
 }
 
 function sortServicos(docs) {
-  return [...docs].sort((a, b) =>
-    ordemServico(a.data().nome) - ordemServico(b.data().nome)
-  );
+  return [...docs].sort((a, b) => {
+    const sa = a.data(), sb = b.data();
+    const ia = parseFloat(sa.item);
+    const ib = parseFloat(sb.item);
+    const va = isNaN(ia) ? 1000 + ordemServico(sa.nome) : ia;
+    const vb = isNaN(ib) ? 1000 + ordemServico(sb.nome) : ib;
+    return va - vb;
+  });
 }
 
 col.onSnapshot(snap => {
@@ -100,6 +105,7 @@ col.onSnapshot(snap => {
 
 document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
+  const item     = document.getElementById("f-item").value.trim();
   const nome     = document.getElementById("f-nome").value.trim();
   const mdo      = parseMoeda(document.getElementById("f-mdo").value);
   const medicao  = parseMoeda(document.getElementById("f-medicao").value);
@@ -112,10 +118,10 @@ document.getElementById("form").addEventListener("submit", function(e) {
   }
 
   if (editandoId) {
-    col.doc(editandoId).update({ nome, mdo, medicao, material, obs });
+    col.doc(editandoId).update({ item, nome, mdo, medicao, material, obs });
     editandoId = null;
   } else {
-    col.add({ nome, mdo, medicao, material, obs,
+    col.add({ item, nome, mdo, medicao, material, obs,
       criadoEm: firebase.firestore.FieldValue.serverTimestamp() });
   }
 
@@ -133,6 +139,7 @@ function editarServico(id) {
   editandoId = id;
   document.getElementById("form-titulo").textContent = "Editar Serviço";
   document.getElementById("btn-submit").textContent  = "✓ Salvar alterações";
+  document.getElementById("f-item").value     = s.item || "";
   document.getElementById("f-nome").value     = s.nome || "";
   document.getElementById("f-mdo").value      = s.mdo      > 0 ? s.mdo.toFixed(2).replace(".", ",")      : "";
   document.getElementById("f-medicao").value  = s.medicao  > 0 ? s.medicao.toFixed(2).replace(".", ",")  : "";
